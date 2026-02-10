@@ -1,11 +1,27 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  name: { type: String, required: true },
+  // Basic Info
+  name: { 
+    type: String, 
+    required: true 
+  },
+  email: { 
+    type: String, 
+    required: true, 
+    unique: true,
+    lowercase: true 
+  },
+  password: { 
+    type: String, 
+    required: true 
+  },
+  phone: { 
+    type: String,
+    required: true 
+  },
   
-  // Subscription info
+  // Subscription Info
   subscriptionTier: { 
     type: String, 
     enum: ['essential', 'premium', 'none'],
@@ -16,33 +32,53 @@ const userSchema = new mongoose.Schema({
     enum: ['active', 'paused', 'cancelled', 'none'],
     default: 'none'
   },
+  
+  // Payment IDs
   stripeCustomerId: String,
   stripeSubscriptionId: String,
   
-  // Quiz/Personalization data
+  // M-Pesa
+  mpesaPhoneNumber: String,
+  
+  // Quiz/Personalization
   cycleInfo: {
-    averageLength: Number,
+    averageLength: { type: Number, default: 28 },
     lastPeriodStart: Date,
-    flowIntensity: String,
-    painLevel: Number,
+    flowIntensity: { 
+      type: String, 
+      enum: ['light', 'medium', 'heavy'],
+      default: 'medium'
+    },
+    painLevel: { 
+      type: Number, 
+      min: 0, 
+      max: 10,
+      default: 5
+    },
   },
   
   preferences: {
-    selfCareStyle: [String],
+    selfCareStyle: [String], // ['spa', 'active', 'cozy', 'creative']
     dietaryRestrictions: [String],
     productPreferences: [String],
   },
   
-  // Shipping
+  // Shipping Address
   shippingAddress: {
     street: String,
+    apartment: String,
     city: String,
-    state: String,
-    zipCode: String,
-    country: String,
+    county: String,
+    postalCode: String,
+    country: { type: String, default: 'Kenya' },
   },
   
-  createdAt: { type: Date, default: Date.now },
+  // Metadata
+  createdAt: { 
+    type: Date, 
+    default: Date.now 
+  },
+  lastLogin: Date,
 });
 
 module.exports = mongoose.model('User', userSchema);
